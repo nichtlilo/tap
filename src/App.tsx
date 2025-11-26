@@ -3,8 +3,8 @@ import jsPDF from 'jspdf';
 
 import SignaturePad from './components/SignaturePad';
 import './App.css';
-import alslebenLogo from './assets/logo-alsleben.svg';
-import talkPhoneLogo from './assets/logo-talk-phone.svg';
+import itsystemLogo from './assets/itsystem_logo.jpeg';
+import talkAndPhoneLogo from './assets/talkandphone_logo.jpeg';
 
 type Customer = {
   fullName: string;
@@ -38,13 +38,13 @@ const companyOptions = [
     label: 'IT Systemhaus Alsleben GmbH',
     value: 'alsleben',
     address: 'Treskowallee 114, 10319 Berlin',
-    logo: alslebenLogo,
+    logo: itsystemLogo,
   },
   {
     label: 'Talk & Phone GmbH',
     value: 'talk-phone',
     address: 'Treskowallee 114, 10319 Berlin',
-    logo: talkPhoneLogo,
+    logo: talkAndPhoneLogo,
   },
 ];
 
@@ -61,14 +61,13 @@ const createEmptyService = (): ServiceEntry => ({
 const formatCurrency = (value: number) =>
   value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
 
-const svgToPngDataUrl = async (svgPath: string): Promise<string> => {
-  const response = await fetch(svgPath);
+const assetToPngDataUrl = async (assetPath: string): Promise<string> => {
+  const response = await fetch(assetPath);
   if (!response.ok) {
     throw new Error('Logo konnte nicht geladen werden.');
   }
-  const svgText = await response.text();
-  const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
-  const objectUrl = URL.createObjectURL(svgBlob);
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
   try {
     const image = await new Promise<HTMLImageElement>((resolve, reject) => {
       const img = new Image();
@@ -195,7 +194,7 @@ function App() {
     if (!companyEntry?.logo) {
       return null;
     }
-    const dataUrl = await svgToPngDataUrl(companyEntry.logo);
+    const dataUrl = await assetToPngDataUrl(companyEntry.logo);
     logoCacheRef.current[companyValue] = dataUrl;
     return dataUrl;
   };
