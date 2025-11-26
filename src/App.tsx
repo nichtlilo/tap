@@ -345,8 +345,33 @@ function App() {
     <div className="app-shell">
       <div className="sheet" ref={sheetRef}>
         <header className="sheet-header">
-          <div>
+          <div className="header-left">
             <p className="eyebrow">Leistungsnachweis Generator</p>
+            <label className="input-field inline-select required">
+              <span>Firma</span>
+              <div className="select-field" data-error={companyError}>
+                <select
+                  value={order.company}
+                  onChange={(event) => handleOrderChange('company', event.target.value)}
+                  onBlur={() => setCompanyTouched(true)}
+                  required
+                  aria-required="true"
+                  aria-invalid={companyError}
+                >
+                  <option value="" disabled>
+                    Bitte wählen
+                  </option>
+                  {companyOptions.map((company) => (
+                    <option key={company.value} value={company.value}>
+                      {company.label}
+                    </option>
+                  ))}
+                </select>
+                <p className={`field-helper ${companyError ? 'error' : ''}`}>
+                  {order.company ? companyAddress : 'Pflichtfeld – bitte wählen Sie eine Firma'}
+                </p>
+              </div>
+            </label>
           </div>
           {companyLogo && (
             <div className="company-brand" aria-live="polite">
@@ -486,31 +511,6 @@ function App() {
                 value={order.year}
                 onChange={(event) => handleOrderChange('year', event.target.value)}
               />
-            </label>
-            <label className="input-field full-width required">
-              <span>Firma</span>
-              <div className="select-field" data-error={companyError}>
-                <select
-                  value={order.company}
-                  onChange={(event) => handleOrderChange('company', event.target.value)}
-                  onBlur={() => setCompanyTouched(true)}
-                  required
-                  aria-required="true"
-                  aria-invalid={companyError}
-                >
-                  <option value="" disabled>
-                    Bitte wählen
-                  </option>
-                  {companyOptions.map((company) => (
-                    <option key={company.value} value={company.value}>
-                      {company.label}
-                    </option>
-                  ))}
-                </select>
-                <p className={`field-helper ${companyError ? 'error' : ''}`}>
-                  {order.company ? companyAddress : 'Pflichtfeld – bitte wählen Sie eine Firma'}
-                </p>
-              </div>
             </label>
           </div>
           {!showSecondTechnician && (
