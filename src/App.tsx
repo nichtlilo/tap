@@ -3,6 +3,8 @@ import jsPDF from 'jspdf';
 
 import SignaturePad from './components/SignaturePad';
 import './App.css';
+import alslebenLogo from './assets/logo-alsleben.svg';
+import talkPhoneLogo from './assets/logo-talk-phone.svg';
 
 type Customer = {
   fullName: string;
@@ -34,11 +36,13 @@ const companyOptions = [
     label: 'IT Systemhaus Alsleben GmbH',
     value: 'alsleben',
     address: 'Treskowallee 114, 10319 Berlin',
+    logo: alslebenLogo,
   },
   {
     label: 'Talk & Phone GmbH',
     value: 'talk-phone',
     address: 'Treskowallee 114, 10319 Berlin',
+    logo: talkPhoneLogo,
   },
 ];
 
@@ -54,6 +58,35 @@ const createEmptyService = (): ServiceEntry => ({
 
 const formatCurrency = (value: number) =>
   value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+
+const svgToPngDataUrl = async (svgPath: string): Promise<string> => {
+  const response = await fetch(svgPath);
+  if (!response.ok) {
+    throw new Error('Logo konnte nicht geladen werden.');
+  }
+  const svgText = await response.text();
+  const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+  const objectUrl = URL.createObjectURL(svgBlob);
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Logo konnte nicht konvertiert werden.'));
+      img.src = objectUrl;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = image.width || 180;
+    canvas.height = image.height || 60;
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Canvas-Kontext nicht verfügbar.');
+    }
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/png');
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
 
 function App() {
   const sheetRef = useRef<HTMLDivElement | null>(null);
@@ -78,6 +111,7 @@ function App() {
   const [companyTouched, setCompanyTouched] = useState(false);
   const [technicianSignature, setTechnicianSignature] = useState<string | null>(null);
   const [customerSignature, setCustomerSignature] = useState<string | null>(null);
+  const logoCacheRef = useRef<Record<string, string>>({});
 
   const totalHours = useMemo(
     () =>
@@ -113,6 +147,11 @@ function App() {
     [order.company],
   );
 
+  const companyLogo = useMemo(
+    () => companyOptions.find((company) => company.value === order.company)?.logo ?? '',
+    [order.company],
+  );
+
   const companyError = companyTouched && !order.company;
 
   const handleCustomerChange = (field: keyof Customer, value: string) => {
@@ -141,16 +180,39 @@ function App() {
     setServices((prev) => (prev.length === 1 ? prev : prev.filter((service) => service.id !== id)));
   };
 
+  const getCompanyLogoDataUrl = async (companyValue: string) => {
+    if (!companyValue) {
+      return null;
+    }
+    if (logoCacheRef.current[companyValue]) {
+      return logoCacheRef.current[companyValue];
+    }
+    const companyEntry = companyOptions.find((company) => company.value === companyValue);
+    if (!companyEntry?.logo) {
+      return null;
+    }
+    const dataUrl = await svgToPngDataUrl(companyEntry.logo);
+    logoCacheRef.current[companyValue] = dataUrl;
+    return dataUrl;
+  };
+
   const handleExportPdf = async () => {
     if (!order.company) {
       setCompanyTouched(true);
       return;
     }
+    const logoDataUrl = await getCompanyLogoDataUrl(order.company);
 
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const marginX = 20;
     let cursorY = 25;
+
+    if (logoDataUrl) {
+      const logoWidth = 40;
+      const logoHeight = 15;
+      pdf.addImage(logoDataUrl, 'PNG', marginX, 10, logoWidth, logoHeight);
+    }
 
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(20);
@@ -285,8 +347,12 @@ function App() {
         <header className="sheet-header">
           <div>
             <p className="eyebrow">Leistungsnachweis Generator</p>
-            <h1>Erstellen Sie professionelle Leistungsnachweise als PDF</h1>
           </div>
+          {companyLogo && (
+            <div className="company-brand" aria-live="polite">
+              <img src={companyLogo} alt={`Logo ${companyLabel}`} />
+            </div>
+          )}
         </header>
 
         <section className="card">
