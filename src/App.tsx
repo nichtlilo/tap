@@ -297,59 +297,49 @@ function App() {
             </div>
           </div>
           <div className="grid two">
-            <label className="input-field required">
+            <label className="input-field">
               <span>Vollständiger Name</span>
               <input
                 type="text"
                 placeholder="z. B. Max Mustermann"
                 value={customer.fullName}
                 onChange={(event) => handleCustomerChange('fullName', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
-            <label className="input-field required">
+            <label className="input-field">
               <span>E-Mail-Adresse</span>
               <input
                 type="email"
                 placeholder="z. B. max@beispiel.de"
                 value={customer.email}
                 onChange={(event) => handleCustomerChange('email', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
-            <label className="input-field required">
+            <label className="input-field">
               <span>Straße und Hausnummer</span>
               <input
                 type="text"
                 placeholder="z. B. Musterstraße 123"
                 value={customer.street}
                 onChange={(event) => handleCustomerChange('street', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
-            <label className="input-field required">
+            <label className="input-field">
               <span>PLZ und Ort</span>
               <input
                 type="text"
                 placeholder="z. B. 10115 Berlin"
                 value={customer.city}
                 onChange={(event) => handleCustomerChange('city', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
-            <label className="input-field required">
+            <label className="input-field">
               <span>Telefonnummer</span>
               <input
                 type="tel"
                 placeholder="z. B. +49 30 12345678"
                 value={customer.phone}
                 onChange={(event) => handleCustomerChange('phone', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
           </div>
@@ -379,26 +369,22 @@ function App() {
             </div>
           </div>
           <div className="grid two">
-            <label className="input-field required">
+            <label className="input-field">
               <span>Auftragsnummer</span>
               <input
                 type="text"
                 placeholder="z. B. AUF-2025-001"
                 value={order.orderNumber}
                 onChange={(event) => handleOrderChange('orderNumber', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
-            <label className="input-field required">
+            <label className="input-field">
               <span>Name des Technikers</span>
               <input
                 type="text"
                 placeholder="z. B. Max Müller"
                 value={order.technician}
                 onChange={(event) => handleOrderChange('technician', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
             {showSecondTechnician && (
@@ -417,26 +403,22 @@ function App() {
                 />
               </label>
             )}
-            <label className="input-field required">
+            <label className="input-field">
               <span>Monat</span>
               <input
                 type="text"
                 placeholder="z. B. November"
                 value={order.month}
                 onChange={(event) => handleOrderChange('month', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
-            <label className="input-field required">
+            <label className="input-field">
               <span>Jahr</span>
               <input
                 type="number"
                 placeholder="2025"
                 value={order.year}
                 onChange={(event) => handleOrderChange('year', event.target.value)}
-                required
-                aria-required="true"
               />
             </label>
             <label className="input-field full-width required">
