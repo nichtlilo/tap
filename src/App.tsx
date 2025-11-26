@@ -10,6 +10,8 @@ type Customer = {
   fullName: string;
   email: string;
   street: string;
+  houseNumber: string;
+  postalCode: string;
   city: string;
   phone: string;
 };
@@ -94,6 +96,8 @@ function App() {
     fullName: '',
     email: '',
     street: '',
+    houseNumber: '',
+    postalCode: '',
     city: '',
     phone: '',
   });
@@ -234,8 +238,8 @@ function App() {
     pdf.text('Kunde:', pageWidth / 2 + 5, cursorY);
     const customerLines = [
       customer.fullName || '-',
-      customer.street || '',
-      customer.city || '',
+      `${customer.street} ${customer.houseNumber}`.trim() || '',
+      `${customer.postalCode} ${customer.city}`.trim() || '',
       customer.phone ? `Tel: ${customer.phone}` : '',
       customer.email ? `E-Mail: ${customer.email}` : '',
     ].filter(Boolean);
@@ -407,19 +411,38 @@ function App() {
               />
             </label>
             <label className="input-field">
-              <span>Straße und Hausnummer</span>
+              <span>Straße</span>
               <input
                 type="text"
-                placeholder="z. B. Musterstraße 123"
+                placeholder="z. B. Musterstraße"
                 value={customer.street}
                 onChange={(event) => handleCustomerChange('street', event.target.value)}
               />
             </label>
             <label className="input-field">
-              <span>PLZ und Ort</span>
+              <span>Hausnummer</span>
               <input
                 type="text"
-                placeholder="z. B. 10115 Berlin"
+                placeholder="z. B. 123A"
+                value={customer.houseNumber}
+                onChange={(event) => handleCustomerChange('houseNumber', event.target.value)}
+              />
+            </label>
+            <label className="input-field">
+              <span>PLZ</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="z. B. 10115"
+                value={customer.postalCode}
+                onChange={(event) => handleCustomerChange('postalCode', event.target.value)}
+              />
+            </label>
+            <label className="input-field">
+              <span>Ort</span>
+              <input
+                type="text"
+                placeholder="z. B. Berlin"
                 value={customer.city}
                 onChange={(event) => handleCustomerChange('city', event.target.value)}
               />
