@@ -31,19 +31,27 @@ const SignaturePad = ({ label, helper, onChange }: SignaturePadProps) => {
       const parent = canvas.parentElement;
       if (!parent) return;
 
+      const rect = parent.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
-      canvas.width = parent.clientWidth * ratio;
-      canvas.height = parent.clientHeight * ratio;
+
+      // Set the internal pixel size
+      canvas.width = rect.width * ratio;
+      canvas.height = rect.height * ratio;
+
+      // Make sure the drawn area matches the visual size
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+
       const context = canvas.getContext('2d');
       if (context) {
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        context.scale(ratio, ratio);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
         context.lineCap = 'round';
         context.lineJoin = 'round';
         context.lineWidth = 2;
         context.strokeStyle = getStrokeColor();
         context.fillStyle = getBackgroundColor();
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, rect.width, rect.height);
+        context.fillRect(0, 0, rect.width, rect.height);
       }
     };
 
